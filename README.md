@@ -58,7 +58,8 @@ cd banking-app
 
 ## Screenshots
 
-<!-- Optionally add screenshots here -->
+<img width="217" height="108" alt="Register Form" src="https://github.com/user-attachments/assets/52f90ef9-8e06-437c-b734-7a98a5599cd1" />
+<img width="960" height="176" alt="User Details" src="https://github.com/user-attachments/assets/7b4a979d-c523-4a0c-83f4-fd2ceb6a1bad" />
 
 ## Contributing
 

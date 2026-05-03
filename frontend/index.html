@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopify Discovery - AI-Powered Picks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2f3f;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-emoji {
+            font-size: 24px;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        /* Left Sidebar - Saved Picks */
+        .sidebar {
+            width: 280px;
+            background: #1a1f2e;
+            border-right: 1px solid #2a2f3f;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #8890a0;
+            letter-spacing: 0.5px;
+        }
+
+        .saved-item {
+            background: #252d3d;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .saved-item:hover {
+            background: #2a3348;
+            border-left-color: #ff6b6b;
+        }
+
+        .saved-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .saved-item-type {
+            font-size: 11px;
+            color: #8890a0;
+            margin-top: 4px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: #1a1f2e;
+            border-bottom: 1px solid #2a2f3f;
+            padding: 0 20px;
+        }
+
+        .tab {
+            padding: 16px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #8890a0;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #ffffff;
+            border-bottom-color: #ff6b6b;
+        }
+
+        .tab:hover {
+            color: #ffffff;
+        }
+
+        /* AI Insight Bar */
+        .ai-insight-bar {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
+            padding: 16px 20px;
+            border-bottom: 1px solid #2a2f3f;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .insight-icon {
+            font-size: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .insight-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #e8eef7;
+            flex: 1;
+        }
+
+        .weather-icon {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        /* Picks Grid */
+        .picks-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            align-content: start;
+        }
+
+        /* Pick Card */
+        .pick-card {
+            background: #1a1f2e;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #2a2f3f;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pick-card:hover {
+            transform: translateY(-4px);
+            border-color: #ff6b6b;
+            box-shadow: 0 12px 24px rgba(255, 107, 107, 0.2);
+        }
+
+        .pick-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #2a2f3f 0%, #1a1f2e 100%);
+            object-fit: cover;
+            position: relative;
+        }
+
+        .pick-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ff6b6b;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 10;
+        }
+
+        .pick-score {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffeb3b;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pick-details {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pick-name {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pick-type {
+            font-size: 12px;
+            color: #8890a0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pick-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .stars {
+            color: #ffeb3b;
+        }
+
+        .rating-count {
+            color: #8890a0;
+            font-size: 12px;
+        }
+
+        .pick-location {
+            font-size: 12px;
+            color: #8890a0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pick-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #2a2f3f;
+        }
+
+        .delivery-badge {
+            background: #ff6b6b;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .save-btn {
+            background: none;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .save-btn:hover {
+            background: #ff6b6b;
+            color: #ffffff;
+        }
+
+        .save-btn.saved {
+            background: #ff6b6b;
+            color: #ffffff;
+            border-color: #ff6b6b;
+        }
+
+        /* Plan Outing Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1f2e;
+            border-radius: 12px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+            border: 1px solid #2a2f3f;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #8890a0;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .plan-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e8eef7;
+            margin: 16px 0;
+        }
+
+        .plan-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .plan-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a3f4f;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4f5f;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8890a0;
+        }
+
+        .loader {
+            border: 3px solid #2a2f3f;
+            border-top: 3px solid #ff6b6b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <span class="logo-emoji">🍽️</span>
+            <span>Discovery</span>
+        </div>
+        <div class="ai-badge">
+            <span>⚡</span>
+            <span>AI-Powered</span>
+        </div>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-title">💾 Saved Picks</div>
+            <div id="saved-list"></div>
+            <button class="plan-btn" style="margin-top: auto;" onclick="openPlanModal()">Plan My Evening ↗</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('restaurants')">🍴 Restaurants</button>
+                <button class="tab" onclick="switchTab('products')">🛍️ Products</button>
+                <button class="tab" onclick="switchTab('trending')">📊 Trending</button>
+            </div>
+
+            <!-- AI Insight Bar -->
+            <div class="ai-insight-bar">
+                <span class="insight-icon">✨</span>
+                <div style="flex: 1;">
+                    <div class="insight-text" id="insight-text">Loading today's picks...</div>
+                </div>
+                <span class="weather-icon" id="weather-icon">⛅</span>
+            </div>
+
+            <!-- Picks Grid -->
+            <div class="picks-container" id="picks-grid">
+                <div class="loading">
+                    <div class="loader"></div>
+                    <p>Discovering amazing places...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan Outing Modal -->
+    <div class="modal" id="plan-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>🗺️ Your Evening Plan</span>
+                <button class="modal-close" onclick="closePlanModal()">✕</button>
+            </div>
+            <div id="plan-content" class="plan-text">
+                <div class="loader" style="margin: 20px auto;"></div>
+                <p style="text-align: center; color: #8890a0;">Claude is crafting your perfect evening...</p>
+            </div>
+            <button class="plan-btn" onclick="closePlanModal()">Got it! 🎉</button>
+        </div>
+    </div>
+
+    <script>
+        // Mock Data
+        const mockPicks = [
+            {
+                id: 1,
+                name: "Pankhii",
+                type: "restaurant",
+                rating: 4.8,
+                reviews: 692,
+                address: "VV Puram, Mysuru",
+                image: "https://images.unsplash.com/photo-1517557808150-9cc64092753a?w=400&h=300&fit=crop",
+                score: 92,
+                reason: "Perfect for hot weather - AC inside, great for brunch",
+                delivery: "10 min"
+            },
+            {
+                id: 2,
+                name: "Fisherman's Wharf",
+                type: "restaurant",
+                rating: 4.7,
+                reviews: 996,
+                address: "Mysuru Royal Palace Road",
+                image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
+                score: 88,
+                reason: "Seafood lovers rejoice! Crisp AC and a view",
+                delivery: "12 min"
+            },
+            {
+                id: 3,
+                name: "Coorg Coffee Estate",
+                type: "product",
+                rating: 4.6,
+                reviews: 542,
+                address: "Specialty Coffee",
+                image: "https://images.unsplash.com/photo-1559056199-641a0ac8b3f4?w=400&h=300&fit=crop",
+                score: 85,
+                reason: "Rain ahead? This Coorg special is trending!",
+                delivery: "15 min"
+            },
+            {
+                id: 4,
+                name: "Siddhartha Chat Street",
+                type: "restaurant",
+                rating: 4.5,
+                reviews: 1234,
+                address: "Chamundi Hill",
+                image: "https://images.unsplash.com/photo-1585238341710-4dd0e06a4c4b?w=400&h=300&fit=crop",
+                score: 82,
+                reason: "Opens 5:30 PM - Perfect for your evening outing",
+                delivery: "18 min"
+            },
+            {
+                id: 5,
+                name: "Mysore Silk Saree",
+                type: "product",
+                rating: 4.9,
+                reviews: 387,
+                address: "GI-Tagged Heritage",
+                image: "https://images.unsplash.com/photo-1591527572758-a2c1e1ed3fe0?w=400&h=300&fit=crop",
+                score: 90,
+                reason: "Local heritage trending today",
+                delivery: "20 min"
+            },
+            {
+                id: 6,
+                name: "The Old House",
+                type: "restaurant",
+                rating: 4.3,
+                reviews: 10323,
+                address: "Nazarbad, Mysuru",
+                image: "https://images.unsplash.com/photo-1504674900907-e6432ad15e12?w=400&h=300&fit=crop",
+                score: 78,
+                reason: "All-day dining favorite in Mysuru",
+                delivery: "14 min"
+            }
+        ];
+
+        let savedPicks = [];
+        let currentTab = 'restaurants';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPicks();
+            updateSavedList();
+        });
+
+        function loadPicks() {
+            const grid = document.getElementById('picks-grid');
+            grid.innerHTML = '';
+
+            const filtered = mockPicks.filter(pick => {
+                if (currentTab === 'restaurants') return pick.type === 'restaurant';
+                if (currentTab === 'products') return pick.type === 'product';
+                return true;
+            });
+
+            filtered.forEach(pick => {
+                const card = createPickCard(pick);
+                grid.appendChild(card);
+            });
+        }
+
+        function createPickCard(pick) {
+            const card = document.createElement('div');
+            card.className = 'pick-card';
+            card.innerHTML = `
+                <div style="position: relative;">
+                    <img src="${pick.image}" class="pick-image" alt="${pick.name}">
+                    <div class="pick-score">⭐ ${pick.score}</div>
+                    <div class="pick-badge">${pick.reason}</div>
+                </div>
+                <div class="pick-details">
+                    <div class="pick-type">${pick.type}</div>
+                    <div class="pick-name">${pick.name}</div>
+                    <div class="pick-rating">
+                        <span class="stars">★ ${pick.rating}</span>
+                        <span class="rating-count">(${pick.reviews})</span>
+                    </div>
+                    <div class="pick-location">📍 ${pick.address}</div>
+                    <div class="pick-footer">
+                        <div class="delivery-badge">⚡ ${pick.delivery}</div>
+                        <button class="save-btn" onclick="savePick(${pick.id}, '${pick.name}')">+ Save</button>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function savePick(id, name) {
+            if (!savedPicks.find(p => p.id === id)) {
+                savedPicks.push({ id, name });
+                updateSavedList();
+                showToast(`✓ "${name}" saved!`);
+            }
+        }
+
+        function updateSavedList() {
+            const list = document.getElementById('saved-list');
+            if (savedPicks.length === 0) {
+                list.innerHTML = '<div style="color: #8890a0; font-size: 12px;">No picks saved yet</div>';
+                return;
+            }
+            list.innerHTML = savedPicks.map(pick => `
+                <div class="saved-item">
+                    <div class="saved-item-name">${pick.name}</div>
+                    <div class="saved-item-type">Saved</div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadPicks();
+        }
+
+        function openPlanModal() {
+            if (savedPicks.length === 0) {
+                showToast('Add some picks first! 😊');
+                return;
+            }
+            document.getElementById('plan-modal').classList.add('active');
+            generatePlan();
+        }
+
+        function closePlanModal() {
+            document.getElementById('plan-modal').classList.remove('active');
+        }
+
+        function generatePlan() {
+            setTimeout(() => {
+                const planContent = document.getElementById('plan-content');
+                planContent.innerHTML = `
+                    <p><strong>Evening Itinerary</strong></p>
+                    <p style="margin-top: 12px;">📍 Start: ${savedPicks[0]?.name || 'Your first pick'} (5:30 PM - 30 min)</p>
+                    <p>⚡ Speed: Direct routes, no detours</p>
+                    <p>🌦️ Weather: Clear skies, light cool breeze - perfect evening!</p>
+                    <p style="margin-top: 12px; color: #ffeb3b;">Claude suggests: Order ahead for best experience, carry a light jacket, check opening hours before visiting.</p>
+                `;
+            }, 1500);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #ff6b6b;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 2000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    </script>
+</body>
+</html>

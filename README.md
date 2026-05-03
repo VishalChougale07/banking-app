@@ -1,69 +1,145 @@
-# banking-app
+# 🚀 Shopify Discovery App
+## AI-Powered Restaurant & Product Discovery (Zomato + Zepto)
 
-# Java Banking Application
+**Combines the best of both worlds:**
+- 🎯 **Zomato features**: AI match scores (0-100), social proof, discovery UX
+- ⚡ **Zepto features**: Speed-first interface, 10-min delivery promise, real-time tracking
 
-A simple Java Swing-based Banking Management System connected to a MySQL database. Users can register, log in, view account details, deposit or withdraw money, and view transaction history.
+---
 
-## Features
+## 🔌 Multi-API Architecture
 
-- User Registration and Login
-- Multiple Account Types (Savings, Checking, etc.)
-- Deposit and Withdraw Funds
-- View Account Balance
-- Transaction History
-- Simple and colorful Java Swing GUI
+| API | Purpose | Status |
+|-----|---------|--------|
+| **Claude AI** | Personalized scoring, insights, outing planning | ✅ Active |
+| **Google Places** | Live restaurant data (ratings, reviews, hours) | ✅ Active |
+| **Open-Meteo** | Real-time weather (free, no API key) | ✅ Active |
+| **PostgreSQL** | Persistent data storage | ✅ Ready |
+| **Shopify Admin API** | Product sync, orders, inventory | ✅ Ready |
 
-## Technologies Used
+---
 
-- Java 8+
-- Swing (for GUI)
-- MySQL (for database)
-- JDBC (for Java-MySQL connectivity)
+## 📦 Backend Features
 
-## Installation & Setup
+✅ **Discovery Feed**
+- Get personalized picks with weather-adjusted AI scores
+- Real-time restaurant data from Google Places
+- Context-aware rankings (weather + time + location)
 
-### Prerequisites
+✅ **AI Insights**
+- Weather-aware contextual insights
+- 100-char catchy recommendations
+- Emoji-friendly messaging
 
-- Java (JDK 8 or above)
-- MySQL Server
-- IDE (like IntelliJ IDEA, Eclipse, or NetBeans)
-- Git
+✅ **Save & Plan**
+- Save picks to curated list
+- Claude plans complete outings
+- Suggests order, timing, weather tips
 
-### Clone the Repository
+✅ **Data Models**
+- Shop (merchant stores)
+- DiscoveryPick (restaurants + products)
+- SavedPick (user curations)
+- Order (Zepto-style delivery tracking)
+
+---
+
+## 🚀 Quick Start
+
+### Setup
 
 ```bash
-git clone https://github.com/VishalChougale07/banking-app.git
-cd banking-app
+# 1. Clone repo
+git clone https://github.com/VishalChougale07/shopify-discovery-app.git
+cd shopify-discovery-app
+
+# 2. Create .env from .env.example
+cp .env.example .env
+
+# 3. Fill in your API keys:
+# - Shopify API Key & Secret (from partners.shopify.com)
+# - Google Places API Key (from cloud.google.com)
+# - Claude API Key (from console.anthropic.com)
+# - PostgreSQL connection string
+
+# 4. Install dependencies
+pip install -r requirements.txt
+
+# 5. Start server
+python main.py
 ```
 
-### Database Setup
+### API Endpoints
 
-1. Create a database called `bankdb` in MySQL.
-2. Run the provided SQL scripts in the `/db` folder to create tables and insert sample data.
-3. Update your database connection details in `DBUtil.java` if necessary.
+**Get Personalized Picks** (with AI scores)
+```
+GET /api/discovery/picks?shop_id=1&location=Mysuru&latitude=12.2958&longitude=75.8235
+```
 
-### Running the Application
+**Get AI Insight** (weather-aware recommendation)
+```
+GET /api/discovery/ai-insight?shop_id=1&location=Mysuru
+```
 
-- Open the project in your IDE.
-- Build and run the `Main` class.
-- The login and registration GUI will appear.
+**Save a Pick**
+```
+POST /api/discovery/save-pick?shop_id=1&pick_id=123
+```
 
-## Usage
+**Get Saved Picks**
+```
+GET /api/discovery/saved-picks?shop_id=1
+```
 
-- Register a new user or log in with existing credentials.
-- Create accounts, deposit, withdraw, and view your account details and transactions.
-- Sample Credentials:
-    - Username: `testuser`
-    - Password: `testpass`
+**Plan Your Outing** (Claude plans your day)
+```
+POST /api/discovery/plan-outing?shop_id=1&latitude=12.2958&longitude=75.8235
+```
 
-## Screenshots
+---
 
-1. Registration and Login Form
-<img width="217" height="108" alt="Register Form" src="https://github.com/user-attachments/assets/52f90ef9-8e06-437c-b734-7a98a5599cd1" />
+## 📊 Response Examples
 
-2. Showing User Details
-<img width="960" height="176" alt="User Details" src="https://github.com/user-attachments/assets/7b4a979d-c523-4a0c-83f4-fd2ceb6a1bad" />
+### Get Picks Response
+```json
+{
+  "picks": [
+    {
+      "name": "Pankhii",
+      "type": "restaurant",
+      "rating": 4.8,
+      "reviews": 692,
+      "score": 92,
+      "reason": "Perfect for hot weather - AC inside, great for brunch"
+    }
+  ],
+  "weather": {
+    "current": {"temperature": 35, "is_raining": false}
+  }
+}
+```
 
-## Contributing
+### AI Insight Response
+```json
+{
+  "insight": "☀️ Hot day vibes → Ice cream & cold coffee trending!",
+  "weather": {"temperature": 35, "is_raining": false},
+  "time_of_day": "afternoon"
+}
+```
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+---
+
+## 🎯 Next Steps
+
+- [ ] Build frontend dashboard (Next.js + Tailwind)
+- [ ] Implement Shopify OAuth flow
+- [ ] Add real-time order tracking
+- [ ] Integrate Zepto delivery partner API
+- [ ] Deploy to production (Docker + Railway)
+
+---
+
+## 📄 License
+
+MIT
